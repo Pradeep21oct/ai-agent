@@ -42,16 +42,18 @@ messages.append({
 while True:
     user_input = input("You: ")
     tool_response = execute_tool(user_input)
-
+    if user_input.lower() in ["exit", "quit"]:
+        print("Assistant: Goodbye! Have a great day.")
+        break
+    if tool_response is not None:
+            print("Assistant: ", tool_response)
+            continue
     if user_input.lower().startswith("summarize"):
         file_name = user_input[10:].strip()
         file_content = read_file(f"data/{file_name}")
         
         prompt = f"Summarize the following file content:\n\n{file_content}"
-        messages.append({
-            "role": "user",
-            "content": prompt
-        })
+       
 
     if user_input.lower().startswith("ask"):
         parts = user_input.split(maxsplit=2)
@@ -65,44 +67,25 @@ while True:
         Question: {question}
         Document:{file_content}"""
        
-        messages.append({
+    messages.append({
             "role": "user",
             "content": prompt
-        })
+    })
         
 
-        response = client.chat.completions.create(
+    response = client.chat.completions.create(
             model=os.getenv("MODEL"),
             messages=messages
-        )
-        print("Assistant: ", response.choices[0].message.content)
-        messages.append({
-            "role": "assistant",
-            "content": response.choices[0].message.content
-        })
-        continue
-    if user_input.lower() in ["exit", "quit"]:
-        print("Assistant: Goodbye! Have a great day.")
-        break
-    if tool_response is not None:
-            print("Assistant: ", tool_response)
-            continue
-
-
-    messages.append({
-        "role": "user",
-        "content": user_input
-    })
-    response = client.chat.completions.create(
-        model=os.getenv("MODEL"),
-        messages=messages
     )
     print("Assistant: ", response.choices[0].message.content)
     messages.append({
-        "role": "assistant",
-        "content": response.choices[0].message.content
-    })
-    
+            "role": "assistant",
+            "content": response.choices[0].message.content
+        })
+    continue
+  
+
+
    
   
 
