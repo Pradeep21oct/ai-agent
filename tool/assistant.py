@@ -1,0 +1,59 @@
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+
+#load_dotenv("./.env")
+load_dotenv(dotenv_path="../.env")
+
+client = OpenAI(api_key=os.getenv("API_KEY"), base_url=os.getenv("BASE_URL"))
+print("=" * 50)
+print("My AI assistant...")
+print("=" * 50)
+role = {  "1": "You are a friendly school teacher. Explain every concept using simple language and real-life examples.",
+
+    "2": "You are a senior Python developer. Explain programming concepts clearly and always include Python examples.",
+
+    "3": "You are an experienced travel guide. Recommend places, food, transportation and travel tips.",
+
+    "4": "You are a motivational coach. Encourage the user and give practical advice with a positive attitude.",
+
+    "5": "You are a professional interviewer. Ask one interview question at a time and provide feedback after each answer."
+}
+print("\nChoose Your Role\n")
+
+print("1. Teacher")
+print("2. Python Expert")
+print("3. Travel Guide")
+print("4. Motivational Coach")
+print("5. Interviewer")
+
+messages = []   
+role_choice = input("Select a role (1-5): ")
+
+messages.append({
+    "role": "system",
+    "content": role.get(role_choice, "You are a helpful AI assistant.")
+})
+
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ["exit", "quit"]:
+        print("Assistant: Goodbye! Have a great day.")
+        break
+    messages.append({
+        "role": "user",
+        "content": user_input
+    })
+    response = client.chat.completions.create(
+        model=os.getenv("MODEL"),
+        messages=messages
+    )
+    print("Assistant: ", response.choices[0].message.content)
+    messages.append({
+        "role": "assistant",
+        "content": response.choices[0].message.content
+    })
+    
+   
+  
+
